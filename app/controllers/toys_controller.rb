@@ -1,5 +1,6 @@
 class ToysController < ApplicationController
   wrap_parameters format: []
+  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
   def index
     toys = Toy.all
@@ -14,6 +15,8 @@ class ToysController < ApplicationController
   def update
     toy = Toy.find_by(id: params[:id])
     toy.update(toy_params)
+    # render
+    render json: toy
   end
 
   def destroy
@@ -27,5 +30,8 @@ class ToysController < ApplicationController
   def toy_params
     params.permit(:name, :image, :likes)
   end
-
+# render errors
+def render_unprocessable_entity_response(invalid)
+  render json: { errors: invalid.record.errors }, status: :unprocessable_entity
+end
 end
